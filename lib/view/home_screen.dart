@@ -7,8 +7,6 @@ import 'package:weather_app/services/location_helper.dart';
 import 'package:weather_app/widgets/custom_text_field.dart';
 import 'dart:async';
 import '../services/weather_services.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -22,6 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
   WeatherServices weatherServices=WeatherServices();
   bool isLoading=true;
   Timer? _debounce;
+  String? _bgImage;
+  String? _icImage;
+
+
 
   @override
   void initState() {
@@ -40,6 +42,31 @@ class _HomeScreenState extends State<HomeScreen> {
     isLoading=true;
     final data =await weatherServices.fetchCityWeather(_controller.text);
     weatherData=DataModel.fromMap(data);
+    if(weatherData.weather![0].main=="Rain"){
+      _bgImage=AppImages.rain;
+      _icImage=AppIcons.rain;
+    }
+    else if(weatherData.weather![0].main=="Clouds"){
+      _bgImage=AppImages.clouds;
+      _icImage=AppIcons.clouds;
+    }else if(weatherData.weather![0].main=="Fog"){
+      _bgImage=AppImages.fog;
+      _icImage=AppIcons.haze2;
+    }else if(weatherData.weather![0].main=="Haze"){
+      _bgImage=AppImages.haze;
+      _icImage=AppIcons.haze;
+    }else if(weatherData.weather![0].main=="Clear"){
+      _bgImage=AppImages.clear;
+      _icImage=AppIcons.clear;
+    }else if(weatherData.weather![0].main=="Thunderstorm"){
+      _bgImage=AppImages.thunderstorm;
+      _icImage=AppIcons.thunderstorm;
+    }
+    else{
+      _bgImage=AppImages.clear;
+      _icImage=AppIcons.clear;
+    }
+
     setState(() {
       isLoading=false;
     });
@@ -58,13 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
       print("Location not available");
     }
   }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _debounce?.cancel();
-    super.dispose();
-  }
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
@@ -76,6 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Stack(
         children: [
           Image(
-            image: AssetImage(AppImages.clouds),
+            image: AssetImage(_bgImage??"assets/images/clear.jpg"),
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.cover,
@@ -120,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Text("${weatherData.weather![0].description}",style: TextStyle(fontSize: 30.sp,fontWeight: FontWeight.normal,color: Colors.black),),
                   SizedBox(width: 30.w,),
-                  Image.asset(AppIcons.clouds,width: 90.w,height: 120.h,)
+                  Image.asset(_icImage??"assets/icons/Clear.png",width: 90.w,height: 120.h,)
                 ],
               ),
           ),
