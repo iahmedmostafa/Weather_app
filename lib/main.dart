@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:weather_app/view/home_screen.dart';
+import 'package:weather_app/view/splash_screen.dart';
 
 void main() {
   runApp( MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         splitScreenMode: false,
     builder: (context, child){
           return MaterialApp(
-            home: HomeScreen(),
+            home: SplashScreen(),
             debugShowCheckedModeBanner: false,
           );
     }

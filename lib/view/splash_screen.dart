@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:weather_app/core/app_icons.dart';
+import 'package:weather_app/view/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -45,14 +47,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: FadeTransition(
-          opacity: _animation!,
-          child: Image.asset(
-            'assets/icons/Clear.png',
-            width: 150,
-            height: 150,
-          ),
+      body: FadeTransition(
+        opacity: _animation!,
+        child: Image.asset(
+          AppIcons.logo,
+          fit: BoxFit.fill,
+          width: double.infinity,
+          height: double.infinity,
         ),
       ),
     );

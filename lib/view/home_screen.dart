@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _controller = TextEditingController();
     _controller.addListener(_onSearchChanged);
     super.initState();
-
     if (_controller.text.isEmpty) {
       getLocationAndFetchWeather();
     } else {
@@ -38,52 +37,42 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  fetchData()async{
-    isLoading=true;
-    final data =await weatherServices.fetchCityWeather(_controller.text);
-    weatherData=DataModel.fromMap(data);
-    if(weatherData.weather![0].main=="Rain"){
-      _bgImage=AppImages.rain;
-      _icImage=AppIcons.rain;
+  Future<void> fetchData() async {
+    setState(() => isLoading = true);
+    try {
+      final data = await weatherServices.fetchCityWeather(_controller.text);
+      weatherData = DataModel.fromMap(data);
+      updateWeatherImages(weatherData.weather![0].main!);
+    } catch (e) {
+      print("Error fetching city weather: $e");
     }
-    else if(weatherData.weather![0].main=="Clouds"){
-      _bgImage=AppImages.clouds;
-      _icImage=AppIcons.clouds;
-    }else if(weatherData.weather![0].main=="Fog"){
-      _bgImage=AppImages.fog;
-      _icImage=AppIcons.haze2;
-    }else if(weatherData.weather![0].main=="Haze"){
-      _bgImage=AppImages.haze;
-      _icImage=AppIcons.haze;
-    }else if(weatherData.weather![0].main=="Clear"){
-      _bgImage=AppImages.clear;
-      _icImage=AppIcons.clear;
-    }else if(weatherData.weather![0].main=="Thunderstorm"){
-      _bgImage=AppImages.thunderstorm;
-      _icImage=AppIcons.thunderstorm;
-    }
-    else{
-      _bgImage=AppImages.clear;
-      _icImage=AppIcons.clear;
+    setState(() => isLoading = false);
+  }
+
+  Future<void> getLocationAndFetchWeather() async {
+    setState(() => isLoading = true);
+    try {
+      final position = await LocationHelper.getCurrentLocation();
+
+      late Map<String, dynamic> data;
+
+      if (position != null) {
+        data = await weatherServices.fetchWeatherByLocation(
+          position.latitude,
+          position.longitude,
+        );
+      } else {
+        print("Location not available, fallback to Cairo");
+        data = await weatherServices.fetchCityWeather("Cairo");
+      }
+
+      weatherData = DataModel.fromMap(data);
+      updateWeatherImages(weatherData.weather![0].main!);
+    } catch (e) {
+      print("Error fetching weather: $e");
     }
 
-    setState(() {
-      isLoading=false;
-    });
-  }
-  void getLocationAndFetchWeather() async {
-    final position = await LocationHelper.getCurrentLocation();
-    if (position != null) {
-      setState(() => isLoading = true);
-      final data = await weatherServices.fetchWeatherByLocation(
-        position.latitude,
-        position.longitude,
-      );
-      weatherData = DataModel.fromMap(data);
-      setState(() => isLoading = false);
-    } else {
-      print("Location not available");
-    }
+    setState(() => isLoading = false);
   }
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
@@ -94,6 +83,38 @@ class _HomeScreenState extends State<HomeScreen> {
         fetchData();
       }
     });
+  }
+  void updateWeatherImages(String condition) {
+    switch (condition) {
+      case "Rain":
+        _bgImage = AppImages.rain;
+        _icImage = AppIcons.rain;
+        break;
+      case "Clouds":
+        _bgImage = AppImages.clouds;
+        _icImage = AppIcons.clouds;
+        break;
+      case "Fog":
+        _bgImage = AppImages.fog;
+        _icImage = AppIcons.haze2;
+        break;
+      case "Haze":
+        _bgImage = AppImages.haze;
+        _icImage = AppIcons.haze;
+        break;
+      case "Clear":
+        _bgImage = AppImages.clear;
+        _icImage = AppIcons.clear;
+        break;
+      case "Thunderstorm":
+        _bgImage = AppImages.thunderstorm;
+        _icImage = AppIcons.thunderstorm;
+        break;
+      default:
+        _bgImage = AppImages.clear;
+        _icImage = AppIcons.clear;
+        break;
+    }
   }
 
   @override
