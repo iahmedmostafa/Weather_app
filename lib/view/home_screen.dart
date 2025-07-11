@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    _debounce = Timer(const Duration(milliseconds: 500), () {
+    _debounce = Timer(const Duration(milliseconds: 1100), () {
       if (_controller.text.trim().isNotEmpty) {
         fetchData();
       }
