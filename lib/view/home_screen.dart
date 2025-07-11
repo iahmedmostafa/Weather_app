@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } catch (e) {
         print("Location Error: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("⚠️ الموقع مش متاح، هنستخدم القاهرة مؤقتًا")),
+          SnackBar(content: Text("⚠️ Location is not available so we will show you weather of Cairo")),
         );
       }
 
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } catch (e) {
       print("Error fetching weather: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("❌ فشل تحميل بيانات الطقس")),
+        SnackBar(content: Text("Error While loading Weather!")),
       );
     } finally {
       setState(() => isLoading = false);
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _controller = TextEditingController();
     _controller.addListener(_onSearchChanged);
-    getLocationAndFetchWeather(); // أول ما يفتح التطبيق
+    getLocationAndFetchWeather();
   }
 
   @override
